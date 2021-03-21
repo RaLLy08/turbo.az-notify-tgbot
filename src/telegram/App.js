@@ -1,15 +1,15 @@
 import { onMessage, onQuery, sendMsgTo, sendPhoto } from '../Bot';
 import { addCarsLink, deleteManyCarLink, deleteOneCarLinkById, getCarsLinksByChatId, getCarsLinksById } from '../models/UserLinks';
 import { addInitialUserState, updateStateStep, getUserState } from '../models/UserState';
-import { carsLinksUpdate } from '../web-parcer/autoParsing';
-import { checkPageLimit, parseLinksFromPages } from '../web-parcer/parser';
+import { carsLinksUpdate } from '../web-parser/autoParsing';
+import { checkPageLimit, parseLinksFromPages } from '../web-parser/parser';
 import Commands from './Commands';
 
 
 
 class App {
     constructor(bot) {
-        require('../web-parcer/autoParsing') // temp
+        require('../web-parser/autoParsing') // temp
 
         onMessage(this.newMsg);
         onQuery(this.newQuery)
