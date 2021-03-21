@@ -1,9 +1,10 @@
-import { onMessage, onQuery, sendMsgTo, sendPhoto } from '../Bot';
-import { addCarsLink, deleteManyCarLink, deleteOneCarLinkById, getCarsLinksByChatId, getCarsLinksById } from '../models/UserLinks';
+import { editMsg, onMessage, onQuery, sendMsgTo, sendPhoto } from '../Bot';
+import { addUserLink, deleteManyUsersLinks, deleteOneUserLinkById, getUserLinksByChatId, getUserLinksById } from '../models/UserLinks';
 import { addInitialUserState, updateStateStep, getUserState } from '../models/UserState';
-import { carsLinksUpdate } from '../web-parser/autoParsing';
+import { UserLinksUpdate } from '../web-parser/autoParsing';
 import { checkPageLimit, parseLinksFromPages } from '../web-parser/parser';
 import Commands from './Commands';
+import AnimateText from './AnimateText';
 
 
 
@@ -16,10 +17,11 @@ class App {
 
         this._commanads = new Commands();
     };
-    newMsg = async msg => {
+    newMsg = async msg => { 
+
         // console.log(msg)
 
-        // getCarsLinksByChatId(msg.chat.id).then(e => console.log(e))
+        // getUserLinksByChatId(msg.chat.id).then(e => console.log(e))
         // this._bot.sendPhoto(msg.chat.id, img.info, fileOptions)
         // https://stackoverflow.com/questions/35991698/telegram-bot-receive-photo-url/36166942
         const isCommand = msg.entities && msg.entities.some(el => el.type === 'bot_command');
@@ -41,7 +43,7 @@ class App {
         // if state '' and link sended 
         if (state && !state.name && msg.text.includes('https://turbo.az/autos') && (msg.text.search(/utf8=/g) === 23 || msg.text.search(/q%5B/g) === 23)) {
             // check car limits
-            const carlinks = await getCarsLinksByChatId(msg.chat.id);
+            const carlinks = await getUserLinksByChatId(msg.chat.id);
 
             if (carlinks.length > 4) {
                 sendMsgTo(msg.chat.id)('Maximum size of list is 5 remove one or connect with Administrations for unlock limits');
@@ -72,7 +74,6 @@ class App {
         }
         // 
 
-
         
         if (state && state.name === 'sendedLink') {
             // msg.text -> name of link 
@@ -83,15 +84,23 @@ class App {
             if (name.length > 10) return sendMsgTo(msg.chat.id)('Name more than 10 symbols, write less')
 
 
-            await sendMsgTo(msg.chat.id)(`Please wait`);
+            const { message_id } = await sendMsgTo(msg.chat.id)(`Please wait`);
             // check cars in link
+            const animation = new AnimateText({
+                frameMs: 500,
+                animationCallback: text => editMsg(msg.chat.id, message_id, 'Please wait' + text ),
+                animation: ['.', '.', '.']
+            })
+ 
+            animation.startLinearAnimate();
+
             const parsedLinks = await parseLinksFromPages(link, 10); 
 
-            await addCarsLink(msg.chat.id, link, name, parsedLinks);
-
-
+            await addUserLink(msg.chat.id, link, name, parsedLinks);
 
             await updateStateStep(msg.chat.id, '', 0, null);
+
+            animation.stopAnimate()
     
             await sendMsgTo(msg.chat.id)(`link "${name}" subscribed! For see your cars list use /myCars command or paste another link for subscribing`);
 
@@ -99,13 +108,13 @@ class App {
         }
 
     }
-
+    
     newQuery = async query => {
         const queryData = query.data && JSON.parse(query.data) || {};
         const { action, data } = queryData;
 
         if (action === 'remove') {
-            deleteOneCarLinkById(data).then(res => {
+            deleteOneUserLinkById(data).then(res => {
 
                 if (res.deletedCount) {
                    sendMsgTo(query.message.chat.id)(`Cars link removed! write /myCars for update list`)
@@ -117,17 +126,27 @@ class App {
         }
 
         if (action === 'send') {
-            getCarsLinksById(data).then(res => {
+            getUserLinksById(data).then(res => {
                 sendMsgTo(query.message.chat.id)(res.carsLink);
             })
         }
 
         if (action === 'updateAll') {
-            sendMsgTo(query.message.chat.id)(`Wait, update in process..`);
+            const { message_id } = await sendMsgTo(query.message.chat.id)(`Wait, update in process`);
+            
+            const animation = new AnimateText({
+                frameMs: 500,
+                animationCallback: text => editMsg(query.message.chat.id, message_id, 'Wait, update in process ' + text ),
+                animation: ['/', '-', '\\', '|']
+            })
+ 
+            animation.startFrameAnimate();
 
-            const userLinks = await getCarsLinksByChatId(query.message.chat.id)
+            const userLinks = await getUserLinksByChatId(query.message.chat.id)
 
-            await carsLinksUpdate(userLinks);
+            await UserLinksUpdate(userLinks);
+
+            animation.stopAnimate();
 
             sendMsgTo(query.message.chat.id)(`Update is done`);
         }

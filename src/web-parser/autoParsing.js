@@ -1,5 +1,5 @@
 import { parseLinksFromPages } from "./parser";
-import { getAllCarsLinks, updateParsedLinks } from "../models/UserLinks"
+import { getAllUserLinks, updateParsedLinks } from "../models/UserLinks"
 import { compareArrays } from "./utils";
 import { sendMsgTo } from "../Bot";
 
@@ -59,7 +59,7 @@ const runAllLinks1 = async (allUserLinks) => {
 } 
 
 
-export const carsLinksUpdate = async (usersLinks) => {
+export const UserLinksUpdate = async (usersLinks) => {
     const compare = async (index) => {
 
         await compareLinks(usersLinks[index])
@@ -108,7 +108,7 @@ const compareLinks = async (userLinks) => {
     }
 
     if (msg) {
-        await sendMsgTo(userLinks.chatId)(msg)
+        await sendMsgTo(userLinks.chatId)(`From ${userLinks.name}:\n${msg}` )
     } else {
         // sendMsgTo(userLinks.chatId)('')
     };
@@ -126,11 +126,13 @@ const compareLinks = async (userLinks) => {
 const autoParseAllLinks = async () => {
     // get all page links 
 
-    const allUsersLinks = await getAllCarsLinks();
+    const allUsersLinks = await getAllUserLinks();
 
     if (allUsersLinks.length) {
-        carsLinksUpdate(allUsersLinks)
+        UserLinksUpdate(allUsersLinks)
     }
 }
 
-// autoParseAllLinks()
+// setTimeout(() => {
+//     autoParseAllLinks()
+// }, 5000);

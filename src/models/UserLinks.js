@@ -6,24 +6,24 @@ export const initUserLinks = (client) => {
     if (!collection) collection = client.db("userChatsLinks").collection("userLinks");
 }
 
-export const getCarsLinksByChatId = async (chatId) => {
+export const getUserLinksByChatId = async (chatId) => {
     const links = await collection.find({ chatId }).toArray();
 
     return links;
 }
 // getUserLink
-export const getCarsLinksById = async (_id) => {
+export const getUserLinksById = async (_id) => {
     return await collection.findOne({ "_id" : ObjectId(_id) });
 }
  
-export const getAllCarsLinks = async (chatId) => {
+export const getAllUserLinks = async () => {
     const links = await collection.find().toArray();
 
     return links;
 }
 
 
-export const addCarsLink = async (chatId, carsLink, name, parsedLinks) => {
+export const addUserLink = async (chatId, carsLink, name, parsedLinks) => {
     return await collection.insertOne({
         chatId,                         // const
         carsLink,                       // const
@@ -43,13 +43,13 @@ export const updateParsedLinks = async (_id, parsedLinks) => {
 }
 // 
 
-export const deleteManyCarLink = async (chatId) => {
+export const deleteManyUsersLinks = async (chatId) => {
     return await collection.deleteMany({
         chatId
     });
 }
 
-export const deleteOneCarLinkById = async (_id) => {
+export const deleteOneUserLinkById = async (_id) => {
     return await collection.deleteOne({ "_id" : ObjectId(_id) });
 }
 

@@ -32,9 +32,9 @@ export const editMsg = (chat_id, message_id, text, inline_keyboard) => {
     bot.editMessageText(text, {
         chat_id,
         message_id,
-        reply_markup: {
-            inline_keyboard
-        }
+        // reply_markup: {
+        //     inline_keyboard
+        // }
     })
 }
 

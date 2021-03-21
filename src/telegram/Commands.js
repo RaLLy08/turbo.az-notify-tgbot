@@ -1,5 +1,5 @@
 import { sendMsgTo, sendPhoto } from "../Bot";
-import { getCarsLinksByChatId } from "../models/UserLinks";
+import { getUserLinksByChatId } from "../models/UserLinks";
 import { getInlineKeyboard } from "./keyboards";
 
 class Commands {
@@ -10,7 +10,7 @@ class Commands {
             case '/start':
                 return sendMsg('Hi this bot subscribes to the car links and notify you if new Car uploded or selled in Turbo.az, type /info for how get this link');
             case '/myCars':
-                return getCarsLinksByChatId(msg.chat.id).then(userLinks => {
+                return getUserLinksByChatId(msg.chat.id).then(userLinks => {
                     if (userLinks.length) {
                         let newMsg = ''
                         const keys = userLinks.map((el, i) => {
@@ -58,14 +58,14 @@ class Commands {
 
                 });
             case '/info':
-                sendMsg('Filtrate your cars and send link, link, link must be up to 10 pages')
+                sendMsg('Filtrate your cars and send link, be carefull link must be up to 10 pages')
                 return sendPhoto(msg.chat.id, 'https://linkpicture.com/q/info.jpg');     
             default:
                 return sendMsg('Unknown command');
         }
     }
 
-    // addUserLinkDb = (msg) => this._db.addCarsLink(msg.chat.id, msg.text).then(e => this._bot.sendMsgTo(msg.chat.id, 'link subscribed! For see your cars list use /myCars command'))
+    // addUserLinkDb = (msg) => this._db.addUserLink(msg.chat.id, msg.text).then(e => this._bot.sendMsgTo(msg.chat.id, 'link subscribed! For see your cars list use /myCars command'))
 
 };
 
