@@ -1,10 +1,11 @@
 import { editMsg, onMessage, onQuery, sendMsgTo, sendPhoto } from '../Bot';
-import { addUserLink, deleteManyUsersLinks, deleteOneUserLinkById, getUserLinksByChatId, getUserLinksById } from '../models/UserLinks';
+import { addUserLink, deleteManyUsersLinks, deleteOneUserLinkById, getUserLinksByChatId, getUserLinksById, updateParsedLinks } from '../models/UserLinks';
 import { addInitialUserState, updateStateStep, getUserState } from '../models/UserState';
 import { userLinksUpdate } from '../web-parser/autoParsing'; // must be loaded lazy
 import { checkPageLimit, parseLinksFromPages } from '../web-parser/parser';
 import Commands from './Commands';
 import AnimateText from './AnimateText';
+import { mergeArray } from '../web-parser/utils';
 
 
 class App {
@@ -142,9 +143,34 @@ class App {
  
             animation.startFrameAnimate();
 
-            const userLinks = await getUserLinksByChatId(query.message.chat.id)
+            const allUserLinks = await getUserLinksByChatId(query.message.chat.id)
 
-            await userLinksUpdate(userLinks);
+            await userLinksUpdate(allUserLinks, async (compareResult, index) => {
+                const userLinks = allUserLinks[index];
+                let msg = ''
+
+                if (compareResult.added.length) {
+                    msg += '\nThis car(s) has been added:\n'
+                    compareResult.added.forEach(el => {
+                        msg += `\nhttps://turbo.az/autos/${el}\n`
+                    })
+                    msg += `*${'-'.repeat(66)}*`
+                }
+            
+                if (compareResult.removed.length) {
+                    msg += '\nThis car(s) has been removed:\n'
+                    compareResult.removed.forEach(el => {
+                        msg += `\nhttps://turbo.az/autos/${el}\n`
+                    })
+                    msg += `*${'-'.repeat(66)}*`
+                }
+                
+                const updatedLinks = mergeArray(userLinks.parsedLinks, compareResult)
+
+                await updateParsedLinks(userLinks._id, updatedLinks)
+
+                await sendMsgTo(userLinks.chatId)(`From ${userLinks.name}:\n${msg}` + (!msg ? ' No changes': ''))
+            });
 
             animation.stopAnimate();
 

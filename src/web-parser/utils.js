@@ -28,3 +28,16 @@ export const compareArrays = (oldState, newState) => {
         removed
     }
 } 
+
+export const mergeArray = (oldState, changes) => {
+    const { added, removed } = changes;
+
+    const newState = oldState.filter(el => !removed.includes(el));
+
+    newState.push(...added);
+
+    return newState
+}
+
+
+ 
