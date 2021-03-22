@@ -6,6 +6,7 @@ const parseLinksFromPage = pageUrl => new Promise((resolve, reject) => {
             var { body } = response;
             // matches from autos/ to "/"" or "
             var matchAllAutoLinks = body.match(/(?<=autos\/)\d{7}.*?(?=("|\/))/g);
+
             var autoLinks = [...new Set(matchAllAutoLinks)];
 
             resolve(autoLinks);
@@ -37,7 +38,9 @@ export const parseLinksFromPages = (link, pageLimit = Infinity) => new Promise((
                // console.log(nextPage)
                 parsePage(nextPage)
             } else {
-                resolve(allLinks);
+                const resultLinks = [...new Set(allLinks)];
+
+                resolve(resultLinks);
             }
         }).catch(err => reject(err));
     }
