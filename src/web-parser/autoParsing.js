@@ -59,10 +59,12 @@ const runAllLinks1 = async (allUserLinks) => {
 } 
 
 
-export const UserLinksUpdate = async (usersLinks) => {
+export const userLinksUpdate = async (usersLinks) => {
     const compare = async (index) => {
 
         await compareLinks(usersLinks[index])
+
+        // const parsedLinks = await parseLinksFromPages(userLinks.carsLink, 10);
 
         if (usersLinks[index + 1]) {
             return compare(index + 1);
@@ -73,7 +75,7 @@ export const UserLinksUpdate = async (usersLinks) => {
 } 
 
 
-
+// remove send messages from inside to outside
 const compareLinks = async (userLinks) => {
     // gets all links from all pages
     // const userLinks = allUserLinks[index];
@@ -81,20 +83,15 @@ const compareLinks = async (userLinks) => {
     const parsedLinks = await parseLinksFromPages(userLinks.carsLink, 10);
 
     console.log(userLinks, parsedLinks)
-
-    // if (!userLinks.parsedLinks.length) {
-    //     // init links if there are no one
-    //     await updateParsedLinks(userLinks._id, links)
-    // }
-
+    // await updateParsedLinks(userLinks._id, parsedLinks)
     // userLinks.parsedLinks -> dbDate links -> parced
     const compareResult = compareArrays(userLinks.parsedLinks, parsedLinks);
     let msg = '';
-
+    console.log(compareResult)
     if (compareResult.added.length) {
         msg += '\nThis car(s) has been added:\n'
         compareResult.added.forEach(el => {
-            msg += `\nhttps://turbo.az/${el}\n`
+            msg += `\nhttps://turbo.az/autos/${el}\n`
         })
         msg += `*${'-'.repeat(66)}*`
     }
@@ -102,7 +99,7 @@ const compareLinks = async (userLinks) => {
     if (compareResult.removed.length) {
         msg += '\nThis car(s) has been removed:\n'
         compareResult.removed.forEach(el => {
-            msg += `\nhttps://turbo.az/${el}\n`
+            msg += `\nhttps://turbo.az/autos/${el}\n`
         })
         msg += `*${'-'.repeat(66)}*`
     }
@@ -114,11 +111,6 @@ const compareLinks = async (userLinks) => {
     };
 
     return;
-    // const nextLinkObj = allUserLinks[index + 1];
-
-    // if (nextLinkObj) {
-    //     parse(nextLinkObj, index + 1);
-    // }
 }
 
 
@@ -129,10 +121,25 @@ const autoParseAllLinks = async () => {
     const allUsersLinks = await getAllUserLinks();
 
     if (allUsersLinks.length) {
-        UserLinksUpdate(allUsersLinks)
+        await userLinksUpdate(allUsersLinks)
     }
 }
 
 // setTimeout(() => {
 //     autoParseAllLinks()
 // }, 5000);
+
+////////////////////////
+
+export const parseCarsFromPages = async (pages) => {
+    const compare = async (index) => {
+
+        const parsedLinks = await parseLinksFromPages(userLinks.carsLink, 10);
+
+        if (usersLinks[index + 1]) {
+            return compare(index + 1);
+        }
+    }
+
+    return compare(0)
+} 

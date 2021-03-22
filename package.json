@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon -r esm src/index.js",
-    "start": "node src/index.js"
+    "dev": "nodemon -r esm src/index.ts",
+    "start": "node src/index.ts"
   },
   "repository": {
     "type": "git",
@@ -18,15 +18,17 @@
     "url": "https://github.com/RaLLy08/turbo.az-notify-tgbot/issues"
   },
   "dependencies": {
+    "@types/node": "^14.14.35",
     "dotenv": "^8.2.0",
     "mongodb": "3.6.4",
     "needle": "^2.6.0",
     "node-telegram-bot-api": "^0.40.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.4",
     "esm": "^3.2.25",
-    "tslint": "^6.1.3"
+    "nodemon": "^2.0.4",
+    "tslint": "^6.1.3",
+    "typescript": "^4.2.3"
   },
   "homepage": "https://github.com/RaLLy08/turbo.az-notify-tgbot#readme"
 }

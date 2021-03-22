@@ -1,15 +1,15 @@
 import { editMsg, onMessage, onQuery, sendMsgTo, sendPhoto } from '../Bot';
 import { addUserLink, deleteManyUsersLinks, deleteOneUserLinkById, getUserLinksByChatId, getUserLinksById } from '../models/UserLinks';
 import { addInitialUserState, updateStateStep, getUserState } from '../models/UserState';
-import { UserLinksUpdate } from '../web-parser/autoParsing';
+import { userLinksUpdate } from '../web-parser/autoParsing'; // must be loaded lazy
 import { checkPageLimit, parseLinksFromPages } from '../web-parser/parser';
 import Commands from './Commands';
 import AnimateText from './AnimateText';
 
 
-
 class App {
-    constructor(bot) {
+    readonly _commanads: any
+    constructor() {
         require('../web-parser/autoParsing') // temp
 
         onMessage(this.newMsg);
@@ -17,7 +17,7 @@ class App {
 
         this._commanads = new Commands();
     };
-    newMsg = async msg => { 
+    newMsg = async (msg: any) => { 
 
         // console.log(msg)
 
@@ -109,7 +109,7 @@ class App {
 
     }
     
-    newQuery = async query => {
+    newQuery = async (query: any) => {
         const queryData = query.data && JSON.parse(query.data) || {};
         const { action, data } = queryData;
 
@@ -144,7 +144,7 @@ class App {
 
             const userLinks = await getUserLinksByChatId(query.message.chat.id)
 
-            await UserLinksUpdate(userLinks);
+            await userLinksUpdate(userLinks);
 
             animation.stopAnimate();
 

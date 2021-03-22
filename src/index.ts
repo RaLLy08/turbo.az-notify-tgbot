@@ -21,6 +21,7 @@ const init = () => {
         initUserState(client);
         initBot(process.env.TELEGRAM_TOKEN);
 
+
         console.log('Mongo is ready');
         new App();
     });

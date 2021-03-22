@@ -4,8 +4,8 @@ const parseLinksFromPage = pageUrl => new Promise((resolve, reject) => {
     needle.get(pageUrl, (error, response) => {
         if (!error && response.statusCode == 200) {
             var { body } = response;
-      
-            var matchAllAutoLinks = body.match(/(autos\/\d{7})/gi);
+            // matches from autos/ to "/"" or "
+            var matchAllAutoLinks = body.match(/(?<=autos\/)\d{7}.*?(?=("|\/))/g);
             var autoLinks = [...new Set(matchAllAutoLinks)];
 
             resolve(autoLinks);
