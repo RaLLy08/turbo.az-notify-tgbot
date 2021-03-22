@@ -28,7 +28,6 @@ const compareLinks = async (userLinks) => {
     // await updateParsedLinks(userLinks._id, parsedLinks)
     // userLinks.parsedLinks -> dbDate links -> parced
     const compareResult = compareArrays(userLinks.parsedLinks, parsedLinks);
-    console.log(compareResult)
 
     return compareResult;
 }
