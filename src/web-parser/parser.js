@@ -29,12 +29,12 @@ export const parseLinksFromPages = (link, pageLimit = Infinity) => new Promise((
 
         parseLinksFromPage(page).then(result => {
             const currentPage = page.match(/(page=\d*)/gi)[0].replace(/\D/g, '');
-            console.log(currentPage, 'check', result.length)
+           // console.log(currentPage, 'check', result.length)
             allLinks.push(...result)
 
             if (result.length && currentPage < pageLimit) {
                 const nextPage = page.replace(`page=${currentPage}`, `page=${+currentPage + 1}`);
-                console.log(nextPage)
+               // console.log(nextPage)
                 parsePage(nextPage)
             } else {
                 resolve(allLinks);

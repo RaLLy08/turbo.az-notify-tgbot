@@ -13,7 +13,7 @@ const runAllLinks1 = async (allUserLinks) => {
 
         const parsedLinks = await parseLinksFromPages(userLinks.carsLink, 10);
 
-        console.log(userLinks, parsedLinks)
+        // console.log(userLinks, parsedLinks)
 
         // if (!userLinks.parsedLinks.length) {
         //     // init links if there are no one
@@ -82,7 +82,7 @@ const compareLinks = async (userLinks) => {
 
     const parsedLinks = await parseLinksFromPages(userLinks.carsLink, 10);
 
-    console.log(userLinks, parsedLinks)
+    // console.log(userLinks, parsedLinks)
     // await updateParsedLinks(userLinks._id, parsedLinks)
     // userLinks.parsedLinks -> dbDate links -> parced
     const compareResult = compareArrays(userLinks.parsedLinks, parsedLinks);
