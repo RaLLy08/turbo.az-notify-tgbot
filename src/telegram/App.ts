@@ -82,7 +82,7 @@ class App {
             const link = state.data;
             const name =  msg.text;
 
-            if (name.length > 10) return sendMsgTo(msg.chat.id)('Name more than 10 symbols, write less')
+            if (name.length > 30) return sendMsgTo(msg.chat.id)('Name more than 30 symbols, write less')
 
 
             const { message_id } = await sendMsgTo(msg.chat.id)(`Please wait`);

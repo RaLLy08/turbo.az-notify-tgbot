@@ -1,4 +1,6 @@
-export const compareArrays = (oldState, newState) => {
+import { ComparedResultInterface } from "../types";
+
+export const compareArrays = (oldState: string[], newState: string[]): ComparedResultInterface => {
     const added = [];
     const removed = [];
 
@@ -29,7 +31,7 @@ export const compareArrays = (oldState, newState) => {
     }
 } 
 
-export const mergeArray = (oldState, changes) => {
+export const mergeArray = (oldState: string[], changes: ComparedResultInterface): string[] => {
     const { added, removed } = changes;
 
     const newState = oldState.filter(el => !removed.includes(el));

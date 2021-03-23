@@ -1,12 +1,14 @@
 import { parseLinksFromPages } from "./parser";
 import { getAllUserLinks, updateParsedLinks } from "../models/UserLinks"
 import { compareArrays } from "./utils";
-
+import { ComparedResultInterface, UserLinksInterface } from '../types'; 
 
 // separate 
 
-export const userLinksUpdate = async (allUsersLinks, onCompare) => {
-    const compare = async (index) => {
+type OnCompareType = (comparedResult: ComparedResultInterface, index: number) => Promise<void>;
+
+export const userLinksUpdate = async (allUsersLinks: UserLinksInterface[], onCompare: OnCompareType) => {
+    const compare = async (index: number) => {
 
         const comparedResult = await compareLinks(allUsersLinks[index])
         await onCompare(comparedResult, index);
@@ -22,26 +24,26 @@ export const userLinksUpdate = async (allUsersLinks, onCompare) => {
 
 
 // remove send messages from inside to outside
-const compareLinks = async (userLinks) => {
-    const parsedLinks = await parseLinksFromPages(userLinks.carsLink, 10);
+const compareLinks = async (userLinks: UserLinksInterface) => {
+    const parsedLinks: any = await parseLinksFromPages(userLinks.carsLink, 10);
 
     // await updateParsedLinks(userLinks._id, parsedLinks)
     // userLinks.parsedLinks -> dbDate links -> parced
-    const compareResult = compareArrays(userLinks.parsedLinks, parsedLinks);
+    const compareResult: ComparedResultInterface = compareArrays(userLinks.parsedLinks, parsedLinks);
 
     return compareResult;
 }
 
 
-const autoParseAllLinks = async () => {
-    // get all page links 
+// const autoParseAllLinks = async () => {
+//     // get all page links 
 
-    const allUsersLinks = await getAllUserLinks();
+//     const allUsersLinks = await getAllUserLinks();
 
-    if (allUsersLinks.length) {
-        await userLinksUpdate(allUsersLinks)
-    }
-}
+//     if (allUsersLinks.length) {
+//         await userLinksUpdate(allUsersLinks)
+//     }
+// }
 
 // setTimeout(() => {
 //     autoParseAllLinks()
