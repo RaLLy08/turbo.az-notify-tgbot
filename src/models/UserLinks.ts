@@ -6,13 +6,13 @@ export const initUserLinks = (client) => {
     if (!collection) collection = client.db("userChatsLinks").collection("userLinks");
 }
 
-export const getUserLinksByChatId = async (chatId) => {
+export const getUserLinksByChatId = async (chatId: number) => {
     const links = await collection.find({ chatId }).toArray();
 
     return links;
 }
 // getUserLink
-export const getUserLinksById = async (_id) => {
+export const getUserLinksById = async (_id: number) => {
     return await collection.findOne({ "_id" : ObjectId(_id) });
 }
  
@@ -23,7 +23,7 @@ export const getAllUserLinks = async () => {
 }
 
 
-export const addUserLink = async (chatId, carsLink, name, parsedLinks) => {
+export const addUserLink = async (chatId: number, carsLink: string, name: string, parsedLinks: Array<string>) => {
     return await collection.insertOne({
         chatId,                         // const
         carsLink,                       // const
@@ -33,7 +33,7 @@ export const addUserLink = async (chatId, carsLink, name, parsedLinks) => {
     });
 }
 // 
-export const updateParsedLinks = async (_id, parsedLinks) => {
+export const updateParsedLinks = async (_id: number, parsedLinks: Array<string>) => {
     return await collection.updateOne({ "_id" : ObjectId(_id) }, {
         $set: { 
             updateParsedTime: Date.now(),
@@ -43,13 +43,13 @@ export const updateParsedLinks = async (_id, parsedLinks) => {
 }
 // 
 
-export const deleteManyUsersLinks = async (chatId) => {
+export const deleteManyUsersLinks = async (chatId: number) => {
     return await collection.deleteMany({
         chatId
     });
 }
 
-export const deleteOneUserLinkById = async (_id) => {
+export const deleteOneUserLinkById = async (_id: number) => {
     return await collection.deleteOne({ "_id" : ObjectId(_id) });
 }
 

@@ -1,6 +1,5 @@
 require('dotenv').config()
-
-import ConnectClient from './models/MongoClient';
+import { MongoClient } from 'mongodb';
 
 import { initBot } from './Bot';
 import { initUserLinks } from './models/UserLinks';
@@ -13,17 +12,17 @@ import { initUserState } from './models/UserState';
  
 const init = () => {
     // const bot = new BotApi();
-    const connectClient = new ConnectClient();
-
-    connectClient.then(client => {
-
-        initUserLinks(client);
-        initUserState(client);
-        initBot(process.env.TELEGRAM_TOKEN);
-
-
-        console.log('Mongo is ready');
-        new App();
+    const client = new MongoClient(process.env.DATABASE_HOST, { useNewUrlParser: true, useUnifiedTopology: true });
+    client.connect(err => {
+        if (!err) {
+            initUserLinks(client);
+            initUserState(client);
+            initBot(process.env.TELEGRAM_TOKEN);
+    
+    
+            console.log('Mongo is ready');
+            new App();
+        };  
     });
 }
 

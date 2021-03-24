@@ -15,11 +15,10 @@ class App {
 
         onMessage(this.newMsg);
         onQuery(this.newQuery)
-
+        
         this._commanads = new Commands();
     };
     newMsg = async (msg: any) => { 
-
         // console.log(msg)
 
         // getUserLinksByChatId(msg.chat.id).then(e => console.log(e))
@@ -46,7 +45,7 @@ class App {
             // check car limits
             const carlinks = await getUserLinksByChatId(msg.chat.id);
 
-            if (carlinks.length > 4) {
+            if (carlinks.length > 10) {
                 sendMsgTo(msg.chat.id)('Maximum size of list is 5 remove one or connect with Administrations for unlock limits');
                 return
             }   
@@ -168,6 +167,11 @@ class App {
                 const updatedLinks = mergeArray(userLinks.parsedLinks, compareResult)
 
                 await updateParsedLinks(userLinks._id, updatedLinks)
+
+                // let valueOfMessages = msg.length / 4000 
+                if (msg.length > 4000) {
+                    msg = msg.substring(0, 3800) + '....' 
+                }
 
                 await sendMsgTo(userLinks.chatId)(`From ${userLinks.name}:\n${msg}` + (!msg ? ' No changes': ''))
             });
