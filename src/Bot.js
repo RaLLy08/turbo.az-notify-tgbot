@@ -5,7 +5,7 @@ process.env.NTBA_FIX_319 = 1;
 let bot = null;
 
 export const initBot = token => {
-    if (!bot) bot = new TelegramBot("1615620662:AAGcnGLyfVl6f80f8wpC5bZ918-nEkuDP4c", { polling: true })
+    if (!bot) bot = new TelegramBot(token, { polling: true })
 }
 
 export const onMessage = cb => {     
