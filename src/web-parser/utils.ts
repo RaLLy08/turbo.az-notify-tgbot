@@ -1,4 +1,7 @@
-import { ComparedResultInterface } from "../types";
+export interface ComparedResultInterface {
+    readonly added: string[],
+    readonly removed: string[],
+}
 
 export const compareArrays = (oldState: string[], newState: string[]): ComparedResultInterface => {
     const added = [];

@@ -1,7 +1,7 @@
 import { parseLinksFromPages } from "./parser";
 import { getAllUserLinks, updateParsedLinks } from "../models/UserLinks"
-import { compareArrays } from "./utils";
-import { ComparedResultInterface, UserLinksInterface } from '../types'; 
+import { compareArrays, ComparedResultInterface } from "./utils";
+import { UserLinksInterface } from '../types'; 
 
 
 // separate
@@ -26,13 +26,16 @@ export const userLinksUpdate = async (allUsersLinks: UserLinksInterface[], onCom
 
 // remove send messages from inside to outside
 const compareLinks = async (userLinks: UserLinksInterface) => {
-    const parsedLinks: any = await parseLinksFromPages(userLinks.carsLink, 10);
+    try {
+        // await updateParsedLinks(userLinks._id, parsedLinks)
+        // userLinks.parsedLinks -> dbDate links -> parced
+        const parsedLinks: string[] = await parseLinksFromPages(userLinks.carsLink, 10);
+        const compareResult: ComparedResultInterface = compareArrays(userLinks.parsedLinks, parsedLinks);
 
-    // await updateParsedLinks(userLinks._id, parsedLinks)
-    // userLinks.parsedLinks -> dbDate links -> parced
-    const compareResult: ComparedResultInterface = compareArrays(userLinks.parsedLinks, parsedLinks);
-
-    return compareResult;
+        return compareResult;
+    } catch (error) {
+        throw error;
+    }
 }
 
 

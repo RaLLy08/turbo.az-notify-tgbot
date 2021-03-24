@@ -4,10 +4,7 @@ export interface UserLinksInterface {
     readonly updateParsedTime: number,  
     readonly parsedLinks: string[],    
     readonly carsLink: string,
+    readonly _id: number
 };
 
-export interface ComparedResultInterface {
-    readonly added: string[],
-    readonly removed: string[],
-}
 

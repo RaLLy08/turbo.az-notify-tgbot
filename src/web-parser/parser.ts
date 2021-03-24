@@ -16,7 +16,7 @@ const parseLinksFromPage = (pageUrl: string): Promise<string[]> => new Promise((
 })
 
 // 'q%5B | utf8= | page=2'
-export const parseLinksFromPages = (link: string, pageLimit: number = Infinity) => new Promise((resolve, reject) => {
+export const parseLinksFromPages = (link: string, pageLimit: number = Infinity): Promise<string[]> => new Promise((resolve, reject) => {
     const allLinks: Array<string> = [];
     let replaceValue: string | RegExp = '';
     

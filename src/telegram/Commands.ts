@@ -1,6 +1,8 @@
 import { sendMsgTo, sendPhoto } from "../Bot";
 import { getUserLinksByChatId } from "../models/UserLinks";
-import { getInlineKeyboard } from "./keyboards";
+import { UserLinksInterface } from "../types";
+import { getInlineKeyboard, KeysType } from "./keyboards";
+
 
 class Commands {
     sendMsg = msg => {
@@ -13,7 +15,7 @@ class Commands {
                 return getUserLinksByChatId(msg.chat.id).then(userLinks => {
                     if (userLinks.length) {
                         let newMsg = ''
-                        const keys = userLinks.map((el, i) => {
+                        const keys: Array<Array<KeysType>> = userLinks.map((el: UserLinksInterface, i: number): Array<KeysType> => {
                             return [
                                 {
                                     text: 'remove ' + (i + 1),
@@ -47,7 +49,7 @@ class Commands {
                         const keyboard = getInlineKeyboard(keys)
 
                        
-                        userLinks.forEach((el, i) => {
+                        userLinks.forEach((el: UserLinksInterface, i: number) => {
                             newMsg += `${i + 1}) Name: ${el.name}\n\tLast update time: ${new Date(el.updateParsedTime).toLocaleString()}\n\tNumber of subscribed cars: ${el.parsedLinks.length}\n`
                         });
 
