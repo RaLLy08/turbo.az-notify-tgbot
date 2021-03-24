@@ -3,7 +3,8 @@ import { getAllUserLinks, updateParsedLinks } from "../models/UserLinks"
 import { compareArrays } from "./utils";
 import { ComparedResultInterface, UserLinksInterface } from '../types'; 
 
-// separate 
+
+// separate
 
 type OnCompareType = (comparedResult: ComparedResultInterface, index: number) => Promise<void>;
 

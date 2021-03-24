@@ -1,36 +1,35 @@
-const needle = require('needle');
+import axios, { AxiosResponse, AxiosError } from 'axios';
 
-const parseLinksFromPage = pageUrl => new Promise((resolve, reject) => {
-    needle.get(pageUrl, (error, response) => {
-        if (!error && response.statusCode == 200) {
-            var { body } = response;
-            // matches from autos/ to "/"" or "
-            var matchAllAutoLinks = body.match(/(?<=autos\/)\d{7}.*?(?=("|\/))/g);
+const parseLinksFromPage = (pageUrl: string): Promise<string[]> => new Promise((resolve, reject) => {
+    axios.get(pageUrl).then((response: AxiosResponse) => {
+        // matches from autos/ to "/"" or "
+        const { data } = response;
 
-            var autoLinks = [...new Set(matchAllAutoLinks)];
+        const matchAllAutoLinks: Array<string> | null = data.match(/(?<=autos\/)\d{7}.*?(?=("|\/))/g);
 
-            resolve(autoLinks);
-        } else {
-            reject(error);
-        }
-      });
+        const autoLinks: Array<string> = Array.from(new Set(matchAllAutoLinks));
+
+        resolve(autoLinks);
+    }).catch((error: AxiosError) => {
+        reject(error);
+    })
 })
 
 // 'q%5B | utf8= | page=2'
-export const parseLinksFromPages = (link, pageLimit = Infinity) => new Promise((resolve, reject) => {
-    const allLinks = [];
-    let replaceValue;
+export const parseLinksFromPages = (link: string, pageLimit: number = Infinity) => new Promise((resolve, reject) => {
+    const allLinks: Array<string> = [];
+    let replaceValue: string | RegExp = '';
     
     if (link.search(/q%5B/g) === 23) replaceValue = 'q%5B';
     if (link.search(/utf8=/g) === 23) replaceValue = 'utf8=';
 
     const initPage = replaceValue ? link.replace(replaceValue, 'page=1') : link;
 
-    const parsePage = (page) => {
+    const parsePage = (page: string) => {
 
-        parseLinksFromPage(page).then(result => {
-            const currentPage = page.match(/(page=\d*)/gi)[0].replace(/\D/g, '');
-           // console.log(currentPage, 'check', result.length)
+        parseLinksFromPage(page).then((result) => {
+            const currentPage = Number(page.match(/(page=\d*)/gi)[0].replace(/\D/g, ''));
+            // console.log(currentPage, 'check', result.length)
             allLinks.push(...result)
 
             if (result.length && currentPage < pageLimit) {
@@ -38,7 +37,7 @@ export const parseLinksFromPages = (link, pageLimit = Infinity) => new Promise((
                // console.log(nextPage)
                 parsePage(nextPage)
             } else {
-                const resultLinks = [...new Set(allLinks)];
+                const resultLinks = Array.from(new Set(allLinks));
 
                 resolve(resultLinks);
             }
@@ -50,8 +49,8 @@ export const parseLinksFromPages = (link, pageLimit = Infinity) => new Promise((
 }) 
 
 // 
-export const checkPageLimit = (link, pageLimit) => new Promise((resolve, reject) => {
-    let replaceValue = ''
+export const checkPageLimit = (link: string, pageLimit: number) => new Promise((resolve, reject) => {
+    let replaceValue: string | RegExp = ''
 
     if (link.search(/q%5B/g) === 23) replaceValue = 'q%5B';
     if (link.search(/utf8=/g) === 23) replaceValue = 'utf8=';
@@ -67,7 +66,7 @@ export const checkPageLimit = (link, pageLimit) => new Promise((resolve, reject)
         if (parsedLinks.length) {
             reject('Page limit - 10 exceeded')
         } else {
-            resolve();
+            resolve('');
         }
     })
 });

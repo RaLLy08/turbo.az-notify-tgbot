@@ -18,9 +18,9 @@
     "url": "https://github.com/RaLLy08/turbo.az-notify-tgbot/issues"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "dotenv": "^8.2.0",
     "mongodb": "3.6.4",
-    "needle": "^2.6.0",
     "node-telegram-bot-api": "^0.40.0"
   },
   "devDependencies": {

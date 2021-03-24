@@ -7,7 +7,7 @@ import Commands from './Commands';
 import AnimateText from './AnimateText';
 import { mergeArray } from '../web-parser/utils';
 
-
+// middleWares - next()
 class App {
     readonly _commanads: any
     constructor() {
