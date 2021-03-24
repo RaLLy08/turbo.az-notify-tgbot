@@ -20,6 +20,11 @@ class App {
         this._commanads = new Commands();
     };
     newMsg = async (msg: any) => { 
+        const state = await getUserState(msg.chat.id);
+
+        // set initial state
+        if (!state) await addInitialUserState(msg.chat.id);
+        // set initial state
         // getUserLinksByChatId(msg.chat.id).then(e => console.log(e))
         // this._bot.sendPhoto(msg.chat.id, img.info, fileOptions)
         // https://stackoverflow.com/questions/35991698/telegram-bot-receive-photo-url/36166942
@@ -31,14 +36,6 @@ class App {
             await updateStateStep(msg.chat.id, '', null);
             return;
         }
-        
-        const state = await getUserState(msg.chat.id);
-
-        // set initial state
-        if (!state) await addInitialUserState(msg.chat.id);
-        // set initial state
-
-
 
         // if state '' and link sended 
         if (state && !state.name && msg.text.includes('https://turbo.az/autos') && (msg.text.search(/utf8=/g) === 23 || msg.text.search(/q%5B/g) === 23 || msg.text.search(/q%5B/g) === 30)) {
@@ -106,7 +103,7 @@ class App {
             animation.stopAnimate()
 
             const keyboard = getReplyKeyboard([['/myCars']]);
-            
+
             await sendMsgTo(msg.chat.id)(`link "${name}" subscribed! For see your cars list use /myCars command or paste another link for subscribing`, keyboard);
 
             return 
