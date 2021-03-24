@@ -3,15 +3,30 @@ export type KeysType = {
     callback_data: string
 }
 
+type InlineKeyboardType = Array<Array<KeysType>>
 
-type ReplyMarkupType = {
+type ReplyInlineMarkupType = {
     reply_markup: {
-        inline_keyboard:  Array<Array<KeysType>>
+        inline_keyboard: InlineKeyboardType
     }
 }
 
-export const getInlineKeyboard = (inline_keyboard: any): ReplyMarkupType => ({
+type KeyboardType = Array<Array<string>>
+
+type ReplyMarkupType = {
+    reply_markup: {
+        keyboard: KeyboardType 
+    }
+}
+
+export const getInlineKeyboard = (inline_keyboard: InlineKeyboardType): ReplyInlineMarkupType => ({
     reply_markup:{
         inline_keyboard,
+    }
+})
+
+export const getReplyKeyboard = (keyboard: KeyboardType): ReplyMarkupType => ({
+    reply_markup: {
+        keyboard,
     }
 })

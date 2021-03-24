@@ -45,4 +45,9 @@ export const mergeArray = (oldState: string[], changes: ComparedResultInterface)
 }
 
 
- 
+export const spliceSplit = (str: string, index: number, count: number, add: string) => {
+    var ar = str.split('');
+    ar.splice(index, count, add);
+    return ar.join('');
+}
+

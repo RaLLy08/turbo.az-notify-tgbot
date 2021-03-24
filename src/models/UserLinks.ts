@@ -42,6 +42,14 @@ export const updateParsedLinks = async (_id: number, parsedLinks: Array<string>)
     })
 }
 // 
+export const updateUserLinksName = async (_id: number, name) => {
+    return await collection.updateOne({ "_id" : ObjectId(_id) }, {
+        $set: { 
+            name
+        }
+    })
+}
+
 
 export const deleteManyUsersLinks = async (chatId: number) => {
     return await collection.deleteMany({

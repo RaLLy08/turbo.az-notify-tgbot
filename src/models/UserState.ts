@@ -1,5 +1,6 @@
 let collection = null;
 
+
 export const initUserState = (client) => {
     if (!collection) collection = client.db("userChatsLinks").collection("userState");
 }
@@ -14,7 +15,6 @@ export const addInitialUserState = async (chatId: number) => {
     return await collection.insertOne({
         chatId,
         name: '',
-        count: 0,
         data: null
     });
 }
@@ -27,19 +27,19 @@ export const addInitialUserState = async (chatId: number) => {
 //     })
 // }
 
-export const updateStateStep = async (chatId: number, name: string, count: number, data) => {
+export const updateStateStep = async (chatId: number, name: String, data) => {
     return await collection.updateOne({
         chatId
     }, {
-        $set: { name, count, data }
+        $set: { name, data }
     })
 }
 
-export const replaceUserState = async (chatId: number, step) => {
-    return await collection.replaceOne({
-        chatId
-    }, {
-        chatId,
-        ...step
-    })
-}
+// export const replaceUserState = async (chatId: number, step) => {
+//     return await collection.replaceOne({
+//         chatId
+//     }, {
+//         chatId,
+//         ...step
+//     })
+// }

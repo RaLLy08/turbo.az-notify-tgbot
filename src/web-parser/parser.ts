@@ -1,4 +1,5 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
+import { spliceSplit } from './utils';
 
 const parseLinksFromPage = (pageUrl: string): Promise<string[]> => new Promise((resolve, reject) => {
     axios.get(pageUrl).then((response: AxiosResponse) => {
@@ -18,12 +19,8 @@ const parseLinksFromPage = (pageUrl: string): Promise<string[]> => new Promise((
 // 'q%5B | utf8= | page=2'
 export const parseLinksFromPages = (link: string, pageLimit: number = Infinity): Promise<string[]> => new Promise((resolve, reject) => {
     const allLinks: Array<string> = [];
-    let replaceValue: string | RegExp = '';
-    
-    if (link.search(/q%5B/g) === 23) replaceValue = 'q%5B';
-    if (link.search(/utf8=/g) === 23) replaceValue = 'utf8=';
 
-    const initPage = replaceValue ? link.replace(replaceValue, 'page=1') : link;
+    const initPage = convertLinkToPage(link)
 
     const parsePage = (page: string) => {
 
@@ -50,15 +47,7 @@ export const parseLinksFromPages = (link: string, pageLimit: number = Infinity):
 
 // 
 export const checkPageLimit = (link: string, pageLimit: number) => new Promise((resolve, reject) => {
-    let replaceValue: string | RegExp = ''
-
-    if (link.search(/q%5B/g) === 23) replaceValue = 'q%5B';
-    if (link.search(/utf8=/g) === 23) replaceValue = 'utf8=';
-    if (link.search(/page=/) === 23) replaceValue = /page=\d/;
-
-    if (!replaceValue) reject('Wrong link');
-
-    const pageAfterLimit = link.replace(replaceValue, `page=${pageLimit}`);
+    const pageAfterLimit = convertLinkToPage(link, pageLimit);
 
     console.log(pageAfterLimit)
 
@@ -71,4 +60,21 @@ export const checkPageLimit = (link: string, pageLimit: number) => new Promise((
     })
 });
 
+const convertLinkToPage = (link: string, page: number = 1): string => {
+    // do not confuse order!
+    // 1
+    if (link.search(/page=/) === 23) {
+        return link.replace(/page=\d/g, `page=${page}`);
+    };
+    // 2
+    if (link.search(/utf8=/g) === 23) {
+        return link.replace(/utf8=/g, `page=${page}`);
+    }
+    // 3
+    if (link.search(/q%5B/g) === 23) {
+        return spliceSplit(link, 23, 0, `page=${page}&`)
+    };
+} 
+
 // autoParsePages(bmw, 3).then(e => console.log(e.length, "RESULT!@"))
+ 

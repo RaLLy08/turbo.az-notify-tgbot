@@ -1,11 +1,12 @@
 import { editMsg, onMessage, onQuery, sendMsgTo, sendPhoto } from '../Bot';
-import { addUserLink, deleteManyUsersLinks, deleteOneUserLinkById, getUserLinksByChatId, getUserLinksById, updateParsedLinks } from '../models/UserLinks';
+import { addUserLink, deleteManyUsersLinks, deleteOneUserLinkById, getUserLinksByChatId, getUserLinksById, updateParsedLinks, updateUserLinksName } from '../models/UserLinks';
 import { addInitialUserState, updateStateStep, getUserState } from '../models/UserState';
 import { userLinksUpdate } from '../web-parser/autoParsing'; // must be loaded lazy
 import { checkPageLimit, parseLinksFromPages } from '../web-parser/parser';
 import Commands from './Commands';
 import AnimateText from './AnimateText';
 import { mergeArray } from '../web-parser/utils';
+import { getReplyKeyboard } from './keyboards';
 
 // middleWares - next()
 class App {
@@ -19,8 +20,6 @@ class App {
         this._commanads = new Commands();
     };
     newMsg = async (msg: any) => { 
-        // console.log(msg)
-
         // getUserLinksByChatId(msg.chat.id).then(e => console.log(e))
         // this._bot.sendPhoto(msg.chat.id, img.info, fileOptions)
         // https://stackoverflow.com/questions/35991698/telegram-bot-receive-photo-url/36166942
@@ -29,6 +28,7 @@ class App {
         if (isCommand) {
             this._commanads.sendMsg(msg);
             // interupt
+            await updateStateStep(msg.chat.id, '', null);
             return;
         }
         
@@ -41,12 +41,12 @@ class App {
 
 
         // if state '' and link sended 
-        if (state && !state.name && msg.text.includes('https://turbo.az/autos') && (msg.text.search(/utf8=/g) === 23 || msg.text.search(/q%5B/g) === 23)) {
+        if (state && !state.name && msg.text.includes('https://turbo.az/autos') && (msg.text.search(/utf8=/g) === 23 || msg.text.search(/q%5B/g) === 23 || msg.text.search(/q%5B/g) === 30)) {
             // check car limits
             const carlinks = await getUserLinksByChatId(msg.chat.id);
 
             if (carlinks.length > 10) {
-                sendMsgTo(msg.chat.id)('Maximum size of list is 5 remove one or connect with Administrations for unlock limits');
+                sendMsgTo(msg.chat.id)('Maximum size of list is 10 remove one or connect with Administrations for unlock limits');
                 return
             }   
 
@@ -58,19 +58,22 @@ class App {
                 await sendPhoto(msg.chat.id, 'https://www.linkpicture.com/q/333Снимок.png')
                 await sendMsgTo(msg.chat.id)('The pages in link more than 10, please send links up to 10 pages');
                 
-                await updateStateStep(msg.chat.id, '', 0, null);
+                await updateStateStep(msg.chat.id, '', null);
                 return;
             }
 
             // 
+            const keyboard = getReplyKeyboard([['/cancel']]);
 
-            await updateStateStep(msg.chat.id, 'sendedLink', 0, msg.text);
+            await updateStateStep(msg.chat.id, 'sendedLink', msg.text);
 
-            sendMsgTo(msg.chat.id)('Enter the name of model cars');
+            sendMsgTo(msg.chat.id)('Enter the name of model cars', keyboard);
 
             return;
         } else if (state && !state.name) {
-            sendMsgTo(msg.chat.id)('Send correct link from turbo.az with filter cars for subscribing')
+            const keyboard = getReplyKeyboard([['/info']]);
+
+            sendMsgTo(msg.chat.id)('Send correct link from turbo.az with filter cars for subscribing, type /info for how', keyboard)
         }
         // 
 
@@ -98,15 +101,27 @@ class App {
 
             await addUserLink(msg.chat.id, link, name, parsedLinks);
 
-            await updateStateStep(msg.chat.id, '', 0, null);
+            await updateStateStep(msg.chat.id, '', null);
 
             animation.stopAnimate()
-    
-            await sendMsgTo(msg.chat.id)(`link "${name}" subscribed! For see your cars list use /myCars command or paste another link for subscribing`);
+
+            const keyboard = getReplyKeyboard([['/myCars']]);
+            
+            await sendMsgTo(msg.chat.id)(`link "${name}" subscribed! For see your cars list use /myCars command or paste another link for subscribing`, keyboard);
 
             return 
         }
 
+        if (state && state.name === 'renameUserLinks') {
+            const name = msg.text;
+            if (name.length > 30) return sendMsgTo(msg.chat.id)('Name more than 30 symbols, write less');
+
+            await updateUserLinksName(state.data, name);
+
+            await updateStateStep(msg.chat.id, '', null);
+
+            sendMsgTo(msg.chat.id)('Renamed successfully! write /myCars for update list');
+        }
     }
     
     newQuery = async (query: any) => {
@@ -129,6 +144,13 @@ class App {
             getUserLinksById(data).then(res => {
                 sendMsgTo(query.message.chat.id)(res.carsLink);
             })
+        }
+
+        if (action === 'rename') {
+            const keyboard = getReplyKeyboard([['/cancel']]);
+
+            await sendMsgTo(query.message.chat.id)('write new name', keyboard);
+            await updateStateStep(query.message.chat.id, 'renameUserLinks', data); // data -> _id
         }
 
         if (action === 'updateAll') {

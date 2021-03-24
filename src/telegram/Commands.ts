@@ -1,7 +1,8 @@
 import { sendMsgTo, sendPhoto } from "../Bot";
 import { getUserLinksByChatId } from "../models/UserLinks";
+import { updateStateStep } from "../models/UserState";
 import { UserLinksInterface } from "../types";
-import { getInlineKeyboard, KeysType } from "./keyboards";
+import { getInlineKeyboard, getReplyKeyboard, KeysType } from "./keyboards";
 
 
 class Commands {
@@ -10,7 +11,8 @@ class Commands {
 
         switch (msg.text) {
             case '/start':
-                return sendMsg('Hi this bot subscribes to the car links and notify you if new Car uploded or selled in Turbo.az, type /info for how get this link');
+                const keyboard = getReplyKeyboard([['/info']]);
+                return sendMsg('Hi this bot subscribes to the car links and notify you if new Car uploded or selled in Turbo.az, type /info for how get this link', keyboard);
             case '/myCars':
                 return getUserLinksByChatId(msg.chat.id).then(userLinks => {
                     if (userLinks.length) {
@@ -18,26 +20,33 @@ class Commands {
                         const keys: Array<Array<KeysType>> = userLinks.map((el: UserLinksInterface, i: number): Array<KeysType> => {
                             return [
                                 {
-                                    text: 'remove ' + (i + 1),
-                                    callback_data: JSON.stringify({
-                                        action: 'remove',
-                                        data: el._id,
-                                    })
-                                },
-                                {
-                                    text: 'send link ' + (i + 1),
+                                    text: (i + 1) + ') send link ' ,
                                     callback_data: JSON.stringify({
                                         action: 'send',
                                         data: el._id
                                     })
                                 },
+                                {
+                                    text: 'rename',
+                                    callback_data: JSON.stringify({
+                                        action: 'rename',
+                                        data: el._id
+                                    })
+                                },
+                                {
+                                    text: 'delete',
+                                    callback_data: JSON.stringify({
+                                        action: 'remove',
+                                        data: el._id,
+                                    })
+                                }
                             ]
                         }) 
 
                         keys.push(
                             [
                                 {
-                                    text: 'Update all',
+                                    text: 'Check all changes',
                                     callback_data: JSON.stringify({
                                         action: 'updateAll',
                                         data: '',
@@ -62,6 +71,10 @@ class Commands {
             case '/info':
                 sendMsg('Filtrate your cars and send link, be carefull link must be up to 10 pages')
                 return sendPhoto(msg.chat.id, 'https://linkpicture.com/q/info.jpg');     
+            case '/cancel':
+                updateStateStep(msg.chat.id, '', null);
+                sendMsg('actions canceled!');
+                return updateStateStep(msg.chat.id, '', null);   
             default:
                 return sendMsg('Unknown command');
         }
