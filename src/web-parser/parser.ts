@@ -49,7 +49,7 @@ export const parseLinksFromPages = (link: string, pageLimit: number = Infinity):
 export const checkPageLimit = (link: string, pageLimit: number) => new Promise((resolve, reject) => {
     const pageAfterLimit = convertLinkToPage(link, pageLimit);
 
-    console.log(pageAfterLimit)
+    // console.log(pageAfterLimit)
 
     parseLinksFromPage(pageAfterLimit).then(parsedLinks => {
         if (parsedLinks.length) {
